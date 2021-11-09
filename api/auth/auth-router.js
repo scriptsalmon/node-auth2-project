@@ -14,6 +14,7 @@ router.post("/register", validateRoleName, (req, res, next) => {
       "role_name": "angel"
     }
    */
+  next();
 });
 
 
