@@ -54,7 +54,7 @@ function findBy(filter) {
 function findById(user_id) {
   return db('users as u')
   .join('roles as r', 'u.role_id', 'r.role_id')
-  .select('u.user_id', 'u.username', 'u.password', 'r.role_name')
+  .select('u.user_id', 'u.username', 'r.role_name')
   .where('u.user_id', user_id).first();
   /**
     You will need to join two tables.
@@ -90,14 +90,14 @@ async function add({ username, password, role_name }) { // done for you
   let created_user_id
   await db.transaction(async trx => {
     let role_id_to_use
-    const [role] = await trx('roles').where('role_name', role_name)
-    if (role) {
+    const [role] = await trx('roles').where('role_name', role_name) //we need to check if role provided by req.body exists
+    if (role) { // if its there, we use its id to create the new user
       role_id_to_use = role.role_id
     } else {
-      const [role_id] = await trx('roles').insert({ role_name: role_name })
+      const [role_id] = await trx('roles').insert({ role_name: role_name }) //if role is new, create in roles and use new role_id
       role_id_to_use = role_id
     }
-    const [user_id] = await trx('users').insert({ username, password, role_id: role_id_to_use })
+    const [user_id] = await trx('users').insert({ username, password, role_id: role_id_to_use }) //comes from add(args)
     created_user_id = user_id
   })
   return findById(created_user_id)
