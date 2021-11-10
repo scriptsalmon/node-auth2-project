@@ -40,6 +40,7 @@ router.get("/", restricted, (req, res, next) => { // done for you
     }
   ]
  */
+// 'only' is like a middleware maker that takes 'admin' and restricts acess.
 router.get("/:user_id", restricted, only('admin'), (req, res, next) => { // done for you
   Users.findById(req.params.user_id)
     .then(user => {
